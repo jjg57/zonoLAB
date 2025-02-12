@@ -44,7 +44,7 @@ axis equal
 
 result = point_projection(Z,y);
 x = result.x(1:Z.n);
-feas_factors = result.x(Z.n+1:end);
+feas_factors = result.x((Z.n+1):end);
 
 plot(x(1), x(2), 'r.', 'MarkerSize', 18)
 
@@ -53,7 +53,7 @@ close all, clc, clear all
 
 Gc = eye(2);
 Gb = 2*eye(2);
-c = [0;0];
+c = [randn(2,1)];
 Z = hybZono(Gc, Gb, c, [], [], []);
 y = randn(2,1);
 
@@ -62,7 +62,7 @@ hold on, grid on, grid minor
 plot(Z, 'b', .5)
 plot(y(1), y(2), 'g.', 'MarkerSize',18)
 
-axis([-3 3 -3 3])
+% axis([-3 3 -3 3])
 axis equal
 
 result = point_projection(Z,y);
