@@ -27,9 +27,9 @@ function [x, xi, result] = point_projection_hybZono(Z, y)
     n = Z.n; nGc = Z.nGc; nGb = Z.nGb;
     nX = n + nGc + nGb;
 
-    R = eye(n,nX);
-    Q = eye(n);
-    
+    % the constraints (with xi_b \in {0,1}) are:
+    % x = Gc*xi_c + Gb*(2 xi_b - 1) + c
+    % b = Ac*xi_c + Ab*(2 xi_b - 1)
     A = zeros(n + Z.nC, nX);
     b = nan(n + Z.nC, 1);
     A(1:n, 1:n) = -eye(n);
@@ -41,6 +41,8 @@ function [x, xi, result] = point_projection_hybZono(Z, y)
     A((n+1):end, (n+nGc+1):(n+nGc+nGb)) = 2*Z.Ab;
     b((n+1):end) = Z.b + Z.Ab*ones(nGb,1);
 
+    % utilize supportFunc to get bounds on x (since we know it must be
+    % inside of Z), to help GUROBI converge faster.
     z_lb = zeros(n,1);
     z_ub = zeros(n,1);
     basisVectors = eye(n);
@@ -57,16 +59,22 @@ function [x, xi, result] = point_projection_hybZono(Z, y)
     vType(1:(n+nGc)) = 'C';
     vType((n+nGc+1):(n+nGc+nGb)) = 'B';
     
-    model.A = sparse(A);
+    % going to minimize the expression 
+    % norm(x-y,2)^2 = (Rz-y)'Q(Rz-y) = x'R'QRx - 2yQRx + y'Qy
+    % where z = [x; xi_c; xi_b]
+    R = eye(n,nX);
+    Q = eye(n);
+    model.modelsense = 'min';
+    model.Q = sparse(R'*Q*R);
     model.obj = -2*y'*Q*R;
+    model.objcon = y'*Q*y;
+
+    model.A = sparse(A);
     model.sense = '=';
     model.rhs = b;
     model.lb = lb;
     model.ub = ub;    
     model.vtype = vType;
-    model.modelsense = 'min';
-    model.objcon = y'*Q*y;
-    model.Q = sparse(R'*Q*R);
 
     % GUROBI settings
     params.Threads = 8;
@@ -108,15 +116,15 @@ function [x, xi, result] = point_projection_zono(Z,y)
     n = Z.n; nG = Z.nG;
     nX = n + nG;
 
-    R = eye(n,nX);
-    Q = eye(n);
-    
-        A = zeros(n + Z.nC, nX);
-        b = nan(n + Z.nC, 1);
-        A(1:n, 1:n) = -eye(n);
-        A(1:n, (n+1):end) = Z.G;
-        b(1:n) = -Z.c;
+    % equality constraint:
+    % x = Gc*xi + c
+    A = zeros(n + Z.nC, nX);
+    b = nan(n + Z.nC, 1);
+    A(1:n, 1:n) = -eye(n);
+    A(1:n, (n+1):end) = Z.G;
+    b(1:n) = -Z.c;
     if isa(Z, 'conZono')
+        % additional constraint b = A*xi
         A((n+1):end, (n+1):(end)) = Z.A;
         b((n+1):end) = Z.b;
     end
@@ -134,17 +142,20 @@ function [x, xi, result] = point_projection_zono(Z,y)
     lb = [z_lb; -ones(nG,1)];
     ub = [z_ub; ones(nG,1)];
 
-    vType(1:(n+nG)) = 'C';
-    model.A = sparse(A);
+    R = eye(n,nX);
+    Q = eye(n);
+    model.modelsense = 'min';    
+    model.Q = sparse(R'*Q*R);
     model.obj = -2*y'*Q*R;
+    model.objcon = y'*Q*y;
+    
+    model.A = sparse(A);
     model.sense = '=';
     model.rhs = b;
     model.lb = lb;
-    model.ub = ub;    
+    model.ub = ub;
+    vType(1:(n+nG)) = 'C';
     model.vtype = vType;
-    model.modelsense = 'min';
-    model.objcon = y'*Q*y;
-    model.Q = sparse(R'*Q*R);
 
     params.Threads = 8;
     params.outputFlag = 0;
