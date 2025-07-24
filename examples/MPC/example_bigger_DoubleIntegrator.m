@@ -4,7 +4,7 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 % Parameters
-nx = 2;  % Number of states
+nx = 3;  % Number of states
 nu = 1;  % Number of inputs
 nh = 5;  % Prediction horizon
 xMin = -5*ones(nx,1);  % State lower bounds
@@ -13,12 +13,18 @@ uMin = -1*ones(nu,1);  % Input lower bounds
 uMax =  1*ones(nu,1);  % Input upper bounds
 Q = eye(nx); % State weight matrix
 R = eye(nu); % Input weight matrix
-computeDualBoundsFlag = 1; % Use automated process to determine dual bounds (requires Gurobi)
-includeTerminalFlag = 1;   % Use terminal penalty and constraints (requires MPT3)
+computeDualBoundsFlag = 0; % Use automated process to determine dual bounds (requires Gurobi)
+includeTerminalFlag = 0;   % Use terminal penalty and constraints (requires MPT3)
 
 % System dynamics (discrete-time double integrator)
-A = [1 1; 0 1];
-B = [1; 0.5];
+% A = [1 1; 
+%      0 1];
+% B = [1; 
+%      0.5];
+% A = [1 1 1 1; 0 1 1 1; 0 0 1 1; 0 0 0 1];
+% B = [1 .1; 0 1; 2 -3; -1 1];
+A = [1 1 1; 0 1 1; 0 0 1];
+B = [1; .5; -.2];
 
 % MPC formulation using MATLAB problem-based optimization definition
 
