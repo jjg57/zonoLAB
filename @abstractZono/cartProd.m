@@ -13,8 +13,22 @@
 %       If X is a conZono and Y is a zono, then Z is a conZono
 %       If X and Y are zono, then Z is a zono
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-function out = cartProd(obj1,obj2)
+function out = cartProd(obj1, varargin)
 
+if nargin == 1
+    out = obj1;
+    return
+elseif nargin == 2
+    out = cartProd2(obj1, varargin{1});
+    return
+else
+    tmp = cartProd2(obj1, varargin{1});
+    out = cartProd(tmp, varargin{2:end});
+    return
+end
+end
+
+function out = cartProd2(obj1, obj2)
 % Ensure object classes match
 [obj1, obj2] = matchSetType(obj1,obj2);
 
@@ -38,5 +52,4 @@ switch class(obj1)
         b = [obj1.b; obj2.b];
         out = hybZono(Gc,Gb,c,Ac,Ab,b);
 end
-
 end

@@ -34,7 +34,7 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         % Arithmetic
         obj = and(obj1,obj2,R)      % Generalized intersection
         obj = boundingBox(obj)      % Bounding box
-        obj = cartProd(obj1,obj2)   % Cartesian product
+        obj = cartProd(obj1,varargin)   % Cartesian product
         obj = convexHull(obj1,obj2) % Convex hull
         obj = mtimes(M,obj)         % Linear mapping
         obj = plus(obj1,obj2)       % Minkowski sum
