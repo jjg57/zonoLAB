@@ -46,7 +46,7 @@ classdef (Abstract) abstractZono < DisplayNonScalarObjectAsTable
         obj = union(obj1,obj2)      % Union
 
         % Visualization
-        [v,f] = plot(obj,varargin)  % Plot and output vertices and faces
+        [v,f,h] = plot(obj,varargin)  % Plot and output vertices and faces
 
         % Auxiliary 
         [out1, out2] = matchSetType(obj1,obj2) % Output sets as the same class (zono, conZono, or hybZono)

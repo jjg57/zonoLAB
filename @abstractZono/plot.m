@@ -21,9 +21,9 @@
 function varargout = plot(obj,varargin)
 
 nOutputs = nargout;
-if (nOutputs == 1) || (nOutputs >= 3) 
-    error('Should either have zero outputs or 2 outputs (vertices and faces).')
-end
+% if (nOutputs == 1) || (nOutputs >= 3) 
+%     error('Should either have zero outputs or 2 outputs (vertices and faces).')
+% end
 varargout = cell(1,nOutputs);
 
 % Parse plotting options
@@ -79,7 +79,7 @@ if strcmp(optPlot.Display,'on')
     % Plot as a single patch with a single handle
     P.Faces = f;
     P.Vertices = v;
-    patch(P)
+    PLOT = patch(P);
 elseif strcmp(optPlot.Display,'off')
     % Do nothing
 elseif strcmp(optPlot.Display,'individual')
@@ -87,13 +87,19 @@ elseif strcmp(optPlot.Display,'individual')
     for indx = 1:size(f,1)
         P.Faces = f(indx,:);
         P.Vertices = v;
-        patch(P)
+        PLOT(indx) = patch(P);
     end
 end
 
 if nOutputs == 2
     varargout{1} = v;
     varargout{2} = f;
+end    
+
+if nOutputs == 3
+    varargout{1} = v;
+    varargout{2} = f;
+    varargout{3} = PLOT;
 end    
 
 end
