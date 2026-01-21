@@ -143,8 +143,10 @@ classdef hybZono < abstractZono
          % Export each leaf as a cell array of conZonos 
         function out = hyb2leafArray(obj)
             leaves = obj.getLeaves();
-            for leaf = 1: width(leaves)
-                out{leaf,1} = conZono(obj.Gc,obj.c+obj.Gb*leaves(:,leaf),obj.Ac,obj.b-obj.Ab*leaves(:,leaf));
+            if size(leaves, 1)>0
+                for leaf = 1: size(leaves,2)
+                    out{leaf,1} = conZono(obj.Gc,obj.c+obj.Gb*leaves(:,leaf),obj.Ac,obj.b-obj.Ab*leaves(:,leaf));
+                end
             end
         end
 
