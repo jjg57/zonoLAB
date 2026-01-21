@@ -66,6 +66,10 @@ switch optSolver.milpSolver
             params.PoolSolutions = min(optSolver.nSolutions,2e9);
         end
         params.MIPFocus = optSolver.MIPFocus;
+        params.FeasibilityTol = 1e-9;
+        params.IntFeasTol = 1e-9;
+        params.OptimalityTol = 1e-9;
+        params.MIPGap = 1e-9;
         result = gurobi(model,params);
         if optSolver.nSolutions == 1
             x = result.x;
