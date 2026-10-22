@@ -9,8 +9,10 @@ function to_json(Z, filename)
         data.class = "HybZono";
     elseif isa(Z, 'conZono')
         data.class = "ConZono";
+        Z = hybZono(Z.G, [], Z.c, Z.A, [], Z.b);
     elseif isa(Z, 'zono')
         data.class = "Zono";
+        Z = hybZono(Z.G, [], Z.c, [], [], []);
     else
         error("to_json: Unrecognized set type.");
     end
