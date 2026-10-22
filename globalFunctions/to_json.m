@@ -29,7 +29,7 @@ function to_json(Z, filename)
 
     data.b = Z.b;
 
-    data.zero_one_form = "False";
+    data.zero_one_form = false;
 
     %% Write file
 
